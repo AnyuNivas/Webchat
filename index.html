@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <script type="text/javascript" src="main.js"></script>
+  <meta charset="UTF-8">
+  <title>Firebase Chat</title>
+  <h1 align = "center">Web based realtime chat</h1>
+  <div class="imgcontainer">
+  <img src="Signal_Blue_Icon.png" alt="web_chat" style="width:170px;height:150px;">
+  </div>
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+</head>
+<body>
+<link rel="stylesheet" href="login.css">
+  User:<input id="username" type="text" placeholder="Name"><br/>
+  Message:<input id="text" type="text" placeholder="Message"><br/>
+  <button id="post" onclick="submitClick()">Send</button><br/>
+  <button type="submit" id = "login">Login with google</button>
+</script>
+  <script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDoD39RTLbt_webq1ICpoyT19BX_HtYOM4",
+    authDomain: "webchat-a778f.firebaseapp.com",
+    databaseURL: "https://webchat-a778f.firebaseio.com",
+    projectId: "webchat-a778f",
+    storageBucket: "webchat-a778f.appspot.com",
+    messagingSenderId: "1026750956990"
+  };
+  firebase.initializeApp(config);
+  console.log(firebase);
+  var database = firebase.database();
+ // firebase authentication
+  var loginButton = document.getElementById("login");
+  loginButton.addEventListener("click",
+   function() {
+      firebase.authWithOAuthPopup("google", function(error, authData) {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log(authData);
+        }
+      }, {remember: "none"}); 
+    });
+   firebase.onAuth(function (authData) {
+    if (authData) {
+        username = authData.google.displayName;
+        loginButton.textContent = "Logged in as " + username;
+        loginButton.disabled = true;
+        postButton.style.display = "block";
+        textInput.style.display = "block";
+        startListening();
+    }
+   });
+  var usernameInput = document.getElementById("username");
+  var textInput = document.getElementById("text");
+  var postButton = document.getElementById("post");
+  var username = null;
+  postButton.style.display = "none";
+  textInput.style.display = "none"; 
+    postButton.addEventListener("click", function() {
+      // ADD THIS LINE
+      var msgUser = username;
+
+      var msgText = textInput.value;
+      myFirebase.push({username:msgUser, text:msgText});
+      textInput.value = "";
+    });
+    var provider = new firebase.auth.GoogleAuthProvider();
+
+  /*function submitClick(){
+    var firebaseref = firebase.database().ref();
+    var messageText = textInput.value;
+    var user = usernameInput.value;
+    firebaseref.push().set(user+"says:"+messageText);
+  } */
+  /*function writeUserData(usernameInput, textInput) {
+  firebase.database().ref('users/' + usernameInput).set({
+    username: usernameInput,
+    text: textInput
+  });
+}*/
+
+  //<!-- ref.push(usernameInput + " says: " + textInput); -->
+  </script>
+</body>
+</html>
